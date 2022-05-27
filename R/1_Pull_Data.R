@@ -624,14 +624,14 @@ release_table = function(sid){
                                   series_min=colDef(name="Hist. Min Level",show=FALSE),
                                   growth_max=colDef(name="Hist. Max Annual Change",show=FALSE),
                                   growth_min=colDef(name="Hist. Min Annual Change",show=FALSE),
-                                  recent_values = colDef(name="",cell = reactablefmtr::react_sparkline(table_a,
-                                                                                        height = 80,
-                                                                                        decimals = 1,
-                                                                                        statline = "mean",
-                                                                                        statline_color = "red",
-                                                                                        bandline = "innerquartiles",
-                                                                                        bandline_color = "darkgreen"))))
-
+                                  #recent_values = colDef(name="",cell = reactablefmtr::react_sparkline(table_a,
+                                   #                                                     height = 80,
+                                  #                                                      decimals = 1,
+                                  #                                                      statline = "mean",
+                                  #                                                      statline_color = "red",
+                                  #                                                      bandline = "innerquartiles",
+                                  #                                                      bandline_color = "darkgreen"))))
+))
 
   output = bscols(list(type_filter1,type_filter2,htmltools::tagList(test)))
 
