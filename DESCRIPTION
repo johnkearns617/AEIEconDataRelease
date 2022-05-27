@@ -1,0 +1,27 @@
+Package: AEIEconDataRelease
+Title: Publishes Data for Econ Data Releases
+Version: 0.0.0.9000
+Authors@R: 
+    person("John", "Kearns", "johnkearns617@gmail.com", role = c("aut", "cre"))
+Description: 
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Imports: 
+  tidyverse,
+  shiny,
+  toastui,
+  BiocParallel,
+  BiocManager,
+  DepecheR,
+  plotly,
+  magrittr,
+  ggthemes,
+  dygraphs,
+  rvest,
+  fredr,
+  jsonlite,
+  sf,
+  reactablefmtr,
+  dataui
