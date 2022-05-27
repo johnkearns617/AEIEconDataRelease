@@ -22,7 +22,8 @@ Imports:
   fredr,
   jsonlite,
   sf,
-  reactablefmtr
+  reactablefmtr,
+  httr
 Remotes:
   angusmoore/seasthedata,
   timelyportfolio/dataui,

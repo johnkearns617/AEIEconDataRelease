@@ -7,8 +7,6 @@
 #    http://shiny.rstudio.com/
 #
 
-remotes::install_github("timelyportfolio/dataui")
-library(dataui)
 require(shiny)
 require(toastui)
 require(BiocParallel)
@@ -20,6 +18,7 @@ require(ggthemes)
 require(dygraphs)
 require(seasthedata)
 require(tidyverse)
+require(crosstalk)
 
 
 # Define UI for application that plots release data
