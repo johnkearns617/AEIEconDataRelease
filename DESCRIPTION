@@ -24,4 +24,5 @@ Imports:
   jsonlite,
   sf,
   reactablefmtr,
-  dataui
+  dataui,
+  seasthedata

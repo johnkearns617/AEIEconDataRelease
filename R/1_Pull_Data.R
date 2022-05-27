@@ -15,6 +15,7 @@ require(sf)
 require(reactablefmtr)
 require(dataui)
 require(magrittr)
+require(seasthedata)
 
 with_tooltip <- function(value, tooltip) {
   tags$abbr(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
@@ -653,4 +654,4 @@ release_table = function(sid){
 dfs <<- list()
 data_release_table = release_table(series_codes$series_id[series_codes$growth=="m_growth"|series_codes$growth=="m_change"|series_codes$growth=="w_growth"|series_codes$growth=="w_change"|series_codes$growth=="q_growth"|series_codes$growth=="q_change"|series_codes$growth=="d_growth"|series_codes$growth=="d_change"])
 
-save.image(paste0(master_dir,"release_data_",Sys.Date(),".RData"))
+save.image(paste0(master_dir,"Data/release_save/release_data_",Sys.Date(),".RData"))
