@@ -23,7 +23,8 @@ Imports:
   jsonlite,
   sf,
   reactablefmtr,
-  httr
+  httr,
+  curl
 Remotes:
   angusmoore/seasthedata,
   timelyportfolio/dataui,
