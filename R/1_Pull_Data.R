@@ -6,7 +6,9 @@
 # set folders
 master_dir = paste0("")
 
+
 # load packages
+remotes::install_github("timelyportfolio/dataui")
 with_tooltip <- function(value, tooltip) {
   tags$abbr(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
             title = tooltip, value)
@@ -622,7 +624,7 @@ release_table = function(sid){
                                   series_min=colDef(name="Hist. Min Level",show=FALSE),
                                   growth_max=colDef(name="Hist. Max Annual Change",show=FALSE),
                                   growth_min=colDef(name="Hist. Min Annual Change",show=FALSE),
-                                  recent_values = colDef(name="",cell = react_sparkline(table_a,
+                                  recent_values = colDef(name="",cell = reactablefmtr::react_sparkline(table_a,
                                                                                         height = 80,
                                                                                         decimals = 1,
                                                                                         statline = "mean",
