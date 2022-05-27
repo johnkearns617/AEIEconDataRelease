@@ -1,0 +1,13 @@
+name: EconDataReleases
+title: EconDataReleases
+username:
+account: johnkearns
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6343465
+bundleId: 5952574
+url: https://johnkearns.shinyapps.io/EconDataReleases/
+when: 1653672998.58168
+lastSyncTime: 1653672998.58168
+asMultiple: FALSE
+asStatic: FALSE
