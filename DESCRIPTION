@@ -25,6 +25,8 @@ Imports:
   reactablefmtr
 Remotes:
   angusmoore/seasthedata,
-  timelyportfolio/dataui
+  timelyportfolio/dataui,
+  sboysel/fredr
+  
   
   

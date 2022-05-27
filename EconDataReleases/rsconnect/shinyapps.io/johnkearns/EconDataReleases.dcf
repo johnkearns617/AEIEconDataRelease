@@ -5,9 +5,9 @@ account: johnkearns
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6343465
-bundleId: 5952574
+bundleId: 5952630
 url: https://johnkearns.shinyapps.io/EconDataReleases/
-when: 1653672998.58168
-lastSyncTime: 1653672998.58168
+when: 1653673988.78581
+lastSyncTime: 1653673988.78581
 asMultiple: FALSE
 asStatic: FALSE

@@ -7,6 +7,8 @@
 #    http://shiny.rstudio.com/
 #
 
+options(repos = BiocManager::repositories())
+
 require(shiny)
 require(toastui)
 require(BiocParallel)
@@ -18,7 +20,6 @@ require(ggthemes)
 require(dygraphs)
 require(seasthedata)
 
-options(repos = BiocManager::repositories())
 
 # Define UI for application that plots release data
 require(shinyjs)
