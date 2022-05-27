@@ -7,8 +7,8 @@
 #    http://shiny.rstudio.com/
 #
 
-options(repos = BiocManager::repositories())
-
+remotes::install_github("timelyportfolio/dataui")
+library(dataui)
 require(shiny)
 require(toastui)
 require(BiocParallel)
@@ -19,15 +19,15 @@ require(magrittr)
 require(ggthemes)
 require(dygraphs)
 require(seasthedata)
+require(tidyverse)
 
 
 # Define UI for application that plots release data
 require(shinyjs)
 
-observe({
-  invalidateLater(600000)
-  load(url(paste0("https://github.com/johnkearns617/AEIEconDataRelease/blob/main/Data/release_save/release_data_",Sys.Date(),".RData?raw=true")))
-})
+
+load(url(paste0("https://github.com/johnkearns617/AEIEconDataRelease/blob/main/Data/release_save/release_data_",Sys.Date(),".RData?raw=true")))
+
 
 ui <- fluidPage(useShinyjs(),
                 tabsetPanel(

@@ -7,16 +7,6 @@
 master_dir = paste0("")
 
 # load packages
-require(tidyverse)
-require(rvest)
-require(fredr)
-require(jsonlite)
-require(sf)
-require(reactablefmtr)
-require(dataui)
-require(magrittr)
-require(seasthedata)
-
 with_tooltip <- function(value, tooltip) {
   tags$abbr(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
             title = tooltip, value)
