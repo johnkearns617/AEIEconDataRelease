@@ -13,6 +13,8 @@ with_tooltip <- function(value, tooltip) {
   tags$abbr(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
             title = tooltip, value)
 }
+remotes::install_github("sboysel/fredr")
+library(fredr)
 
 # set FRED key
 fred_key = "156b9cd1b9a52db3b9fc0bab8aca2b39"
