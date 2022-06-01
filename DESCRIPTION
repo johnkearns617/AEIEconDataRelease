@@ -26,6 +26,7 @@ Imports:
   httr,
   curl
 Remotes:
+  hadley/testthat,
   angusmoore/seasthedata,
   timelyportfolio/dataui,
   sboysel/fredr
