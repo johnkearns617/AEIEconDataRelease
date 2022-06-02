@@ -1,24 +1,24 @@
 # EconDataReleases.R
 # John Kearns and Grant Seiter
 # 2022-05-05
-# Last updated: 2022-05-23 \\ jdk
+# Last updated: 2022-06-02 \\ gms
 
 # set folders
 master_dir = paste0("")
 
 
 # load packages
-remotes::install_github("timelyportfolio/dataui",dependencies=FALSE,force=TRUE)
-library(seasthedata)
+library(remotes)
 library(fredr)
-library(dataui)
 library(tidyverse)
+remotes::install_github("timelyportfolio/dataui",dependencies=TRUE,force=TRUE)
+remotes::install_github("angusmoore/seasthedata",dependencies=TRUE,force=TRUE)
+library(dataui)
+library(seasthedata)
 with_tooltip <- function(value, tooltip) {
   tags$abbr(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
             title = tooltip, value)
 }
-remotes::install_github("sboysel/fredr")
-library(fredr)
 
 # set FRED key
 fred_key = "156b9cd1b9a52db3b9fc0bab8aca2b39"
