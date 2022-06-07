@@ -1,7 +1,7 @@
 # EconDataReleases.R
 # John Kearns and Grant Seiter
 # 2022-05-05
-# Last updated: 2022-06-02 \\ gms
+# Last updated: 2022-06-06 \\ jdk
 
 # set folders
 master_dir = paste0("")
@@ -586,6 +586,16 @@ release_table = function(sid){
 
   data = SharedData$new(table_a)
 
+  return(data)
+}
+
+vis_table = function(data,save_table_a,table_a){
+
+  with_tooltip <- function(value, tooltip) {
+    tags$abbr(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
+              title = tooltip, value)
+  }
+
   type_filter1 <- filter_checkbox(
     id = "type",
     label = "Type",
@@ -630,13 +640,14 @@ release_table = function(sid){
                                   series_min=colDef(name="Hist. Min Level",show=FALSE),
                                   growth_max=colDef(name="Hist. Max Annual Change",show=FALSE),
                                   growth_min=colDef(name="Hist. Min Annual Change",show=FALSE),
-                                  recent_values = colDef(name="",cell = reactablefmtr::react_sparkline(table_a,
-                                                                                                height = 80,
-                                                                                                decimals = 1,
-                                                                                                statline = "mean",
-                                                                                                statline_color = "red",
-                                                                                                bandline = "innerquartiles",
-                                                                                                bandline_color = "darkgreen"))))
+                                  recent_values = colDef(name="",cell = react_sparkline(table_a,
+                                                                                        height = 80,
+                                                                                        decimals = 1,
+                                                                                        statline = "mean",
+                                                                                        statline_color = "red",
+                                                                                        bandline = "innerquartiles",
+                                                                                        bandline_color = "darkgreen"))))
+
 
   output = bscols(list(type_filter1,type_filter2,htmltools::tagList(test)))
 
@@ -651,4 +662,5 @@ release_table = function(sid){
 dfs <<- list()
 data_release_table = release_table(series_codes$series_id[series_codes$growth=="m_growth"|series_codes$growth=="m_change"|series_codes$growth=="w_growth"|series_codes$growth=="w_change"|series_codes$growth=="q_growth"|series_codes$growth=="q_change"|series_codes$growth=="d_growth"|series_codes$growth=="d_change"])
 
-save.image(paste0(master_dir,"Data/release_save/release_data_",Sys.Date(),".RData"))
+save(data_release_table,dfs,save_table_a,vis_table,file=paste0(master_dir,"Data/release_save/release_data.RData"))
+
