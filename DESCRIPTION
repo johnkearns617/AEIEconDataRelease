@@ -2,7 +2,8 @@ Package: AEIEconDataRelease
 Title: Publishes Data for Econ Data Releases
 Version: 0.0.0.9000
 Authors@R: 
-    person("John", "Kearns", "johnkearns617@gmail.com", role = c("aut", "cre"))
+    person("John", "Kearns", "johnkearns617@gmail.com", role = c("aut", "cre", "cph"))
+    person("Grant", "Seiter", "seiterecon@gmail.com", role=c("ctb"))
 Description: 
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -24,7 +25,8 @@ Imports:
   sf,
   reactablefmtr,
   httr,
-  curl
+  curl,
+  requests
 Remotes:
   hadley/testthat,
   angusmoore/seasthedata,
