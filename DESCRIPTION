@@ -25,7 +25,8 @@ Imports:
   sf,
   reactablefmtr,
   httr,
-  curl
+  curl,
+  remotes
 Remotes:
   hadley/testthat,
   angusmoore/seasthedata,
