@@ -662,5 +662,5 @@ vis_table = function(data,save_table_a,table_a){
 dfs <<- list()
 data_release_table = release_table(series_codes$series_id[series_codes$growth=="m_growth"|series_codes$growth=="m_change"|series_codes$growth=="w_growth"|series_codes$growth=="w_change"|series_codes$growth=="q_growth"|series_codes$growth=="q_change"|series_codes$growth=="d_growth"|series_codes$growth=="d_change"])
 
-save(data_release_table,dfs,save_table_a,vis_table,file=paste0(master_dir,"Data/release_save/release_data.RData"))
+save(data_release_table,dfs,save_table_a,vis_table,series_codes,release_dates,file=paste0(master_dir,"Data/release_save/release_data.RData"))
 
