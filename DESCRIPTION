@@ -27,7 +27,8 @@ Imports:
   httr,
   curl,
   remotes,
-  plotly
+  plotly,
+  ggalluvial
 Remotes:
   hadley/testthat,
   angusmoore/seasthedata,
