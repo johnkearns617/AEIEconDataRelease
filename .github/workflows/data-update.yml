@@ -1,4 +1,4 @@
-name: Hourly Data Update
+name: Hourly Data Update 
 
 on:
   schedule:
