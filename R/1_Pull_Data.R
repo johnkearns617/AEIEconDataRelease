@@ -15,6 +15,7 @@ require(sf)
 require(reactablefmtr)
 require(dataui)
 require(magrittr)
+require(plotly)
 
 with_tooltip <- function(value, tooltip) {
   tags$abbr(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
