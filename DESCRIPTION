@@ -26,7 +26,8 @@ Imports:
   reactablefmtr,
   httr,
   curl,
-  remotes
+  remotes,
+  plotly
 Remotes:
   hadley/testthat,
   angusmoore/seasthedata,
