@@ -1,7 +1,7 @@
 # EconDataReleases.R
 # John Kearns and Grant Seiter
 # 2022-05-05
-# Last updated: 2022-06-08 \\ jdk
+# Last updated: 2022-06-09 \\ jdk
 
 # set folders
 master_dir = paste0("")
@@ -799,6 +799,29 @@ plot_data = function(data,variable,start_date=-Inf,end_date=Inf){
 
 }
 
+gdp_plot = lapply(c("DGDSRY2Q224SBEA","DSERRY2Q224SBEA","A008RY2Q224SBEA","A011RY2Q224SBEA","A014RY2Q224SBEA","A020RY2Q224SBEA","A021RY2Q224SBEA","A822RY2Q224SBEA"),fredr) %>%
+  bind_rows() %>%
+  mutate(title=case_when(
+    series_id=="DGDSRY2Q224SBEA"~"Personal goods consumption",
+    series_id=="DSERRY2Q224SBEA"~"Personal services consumption",
+    series_id=="A008RY2Q224SBEA"~"Gross private nonresidential investment",
+    series_id=="A011RY2Q224SBEA"~"Gross private residential investment",
+    series_id=="A014RY2Q224SBEA"~"Change in private inventories",
+    series_id=="A020RY2Q224SBEA"~"Exports of goods and services",
+    series_id=="A021RY2Q224SBEA"~"Imports of goods and services",
+    series_id=="A822RY2Q224SBEA"~"Government consumption and investment"
+  )) %>%
+  group_by(date) %>%
+  mutate(real_gdp_growth=sum(value)) %>%
+  ungroup()
+
+gdp_plotly = ggplotly(ggplot(gdp_plot %>% select(date,value,title) %>% filter(date>(Sys.Date()-(365*5))),aes(x=date,y=value,fill=title)) +
+  geom_bar(stat="identity") +
+  geom_point(gdp_plot %>% distinct(date,real_gdp_growth) %>% filter(date>(Sys.Date()-(365*5))),inherit.aes=FALSE,mapping=aes(x=date,y=real_gdp_growth),size=3) +
+  geom_line(gdp_plot %>% distinct(date,real_gdp_growth) %>% filter(date>(Sys.Date()-(365*5))),inherit.aes=FALSE,mapping=aes(x=date,y=real_gdp_growth)) +
+  ggthemes::theme_fivethirtyeight() +
+  scale_fill_discrete(name="") +
+  labs(y="Contribution to real GDP growth (%)"))
 
 
 # make function to generate summary table for a given release
@@ -901,4 +924,4 @@ vis_table = function(data,save_table_a,table_a){
 dfs <<- list()
 data_release_table = release_table(series_codes$series_id[series_codes$growth=="m_growth"|series_codes$growth=="m_change"|series_codes$growth=="w_growth"|series_codes$growth=="w_change"|series_codes$growth=="q_growth"|series_codes$growth=="q_change"|series_codes$growth=="d_growth"|series_codes$growth=="d_change"])
 
-save(data_release_table,dfs,save_table_a,vis_table,release_dates,series_codes,file=paste0(master_dir,"Data/release_save/release_data.RData"))
+save(data_release_table,dfs,save_table_a,vis_table,release_dates,series_codes,gdp_plot,gdp_plotly,file=paste0(master_dir,"Data/release_save/release_data.RData"))
