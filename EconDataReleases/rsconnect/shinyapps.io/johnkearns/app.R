@@ -30,6 +30,7 @@ library(seasthedata)
 library(dataui)
 library(fredr)
 library(reactablefmtr)
+library(ggalluvial)
 
 
 
@@ -79,7 +80,17 @@ server <- function(input, output, session) {
         size="l"))
 
     }
-    else{
+    else{ if(save_table_a$sid[input$tableid1]=="LNS17400000"){
+
+      showModal(modalDialog(
+        title = "Graph",
+        renderPlot({labor_flows_plotly}),
+        downloadButton("downloadData","Download"),
+        easyClose = TRUE,
+        footer = NULL,
+        size="l"))
+
+    } else{
     df = dfs[[paste0(save_table_a$sid[input$tableid1])]]
     showModal(modalDialog(
       title = "Graph",
@@ -91,7 +102,7 @@ server <- function(input, output, session) {
       easyClose = TRUE,
       footer = NULL,
       size="l"))}
-  })
+  }})
 
   output$downloadData <- downloadHandler(
     filename = function() {
@@ -107,11 +118,3 @@ server <- function(input, output, session) {
 
 # Run the application
 shinyApp(ui = ui, server = server)
-
-
-
-
-
-
-
-
