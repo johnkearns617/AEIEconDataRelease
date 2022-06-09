@@ -67,6 +67,19 @@ server <- function(input, output, session) {
 
   observeEvent(input$tableid1, {
     req(input$tableid1)
+
+    if(save_table_a$sid[input$tableid1]=="A191RL1Q225SBEA"){
+
+      showModal(modalDialog(
+        title = "Graph",
+        renderPlotly({gdp_plotly}),
+        downloadButton("downloadData","Download"),
+        easyClose = TRUE,
+        footer = NULL,
+        size="l"))
+
+    }
+    else{
     df = dfs[[paste0(save_table_a$sid[input$tableid1])]]
     showModal(modalDialog(
       title = "Graph",
@@ -77,7 +90,7 @@ server <- function(input, output, session) {
       downloadButton("downloadData","Download"),
       easyClose = TRUE,
       footer = NULL,
-      size="l"))
+      size="l"))}
   })
 
   output$downloadData <- downloadHandler(
