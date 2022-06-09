@@ -16,6 +16,7 @@ require(reactablefmtr)
 require(dataui)
 require(magrittr)
 require(plotly)
+require(ggalluvial)
 
 with_tooltip <- function(value, tooltip) {
   tags$abbr(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
@@ -58,7 +59,7 @@ pull_release_dates_json = function(key,date_start,date_end=Sys.Date() %m+% years
 release_dates = pull_release_dates_json(fred_key,"2022-01-01") %>%
   filter(release_id%in%selected_data$release_id) %>%
   bind_rows(data.frame(release_id=101,release_name="FOMC Press Conference",release_last_updated="2022-06-06",
-                       date=paste0("2022-",c("01","03","05","06","07","09","11","12"),"-",c("26","16","04","15","27","21","02","14")))) # add FOMC press releases at beginning of year
+                       date=paste0("2022-",c("01","03","05","06","07","09","11","12"),"-",c("26","16","04","15","27","21","02","14"))))  # add FOMC press releases at beginning of year
 
 # pull series from FRED
 series_codes = readxl::read_excel(paste0(master_dir,"selected_data_codes.xlsx"),sheet="Series")
@@ -106,10 +107,56 @@ m_growth_function = function(sid){
   require(tidyverse)
   require(magrittr)
 
+  qcewGetAreaData <- function(year, qtr, area) {
+    url <- "http://data.bls.gov/cew/data/api/YEAR/QTR/area/AREA.csv"
+    url <- sub("YEAR", year, url, ignore.case=FALSE)
+    url <- sub("QTR", tolower(qtr), url, ignore.case=FALSE)
+    url <- sub("AREA", toupper(area), url, ignore.case=FALSE)
+    read.csv(url, header = TRUE, sep = ",", quote="\"", dec=".", na.strings=" ", skip=0)
+  }
+
+  if(sid=="QCEWEMP"){
+
+    data = data.frame()
+    for(yr in c(2014:year(Sys.Date()))){
+      for(qtr in c(1:4)){
+        tryCatch({
+          df = qcewGetAreaData(yr, qtr, "US000") %>%
+            filter(own_code==0)
+          data = bind_rows(data,df)}
+          ,error=function(e){print(paste0("ERROR: ",conditionMessage(e)))})
+      }
+    }
+
+    data = data %>%
+      select(year,qtr,month1_emplvl,month2_emplvl,month3_emplvl) %>%
+      pivot_longer(month1_emplvl:month3_emplvl,names_to="variable",values_to="value") %>%
+      mutate(month=case_when(
+        qtr==1&variable=="month1_emplvl"~1,
+        qtr==2&variable=="month1_emplvl"~4,
+        qtr==3&variable=="month1_emplvl"~7,
+        qtr==4&variable=="month1_emplvl"~10,
+        qtr==1&variable=="month2_emplvl"~2,
+        qtr==2&variable=="month2_emplvl"~5,
+        qtr==3&variable=="month2_emplvl"~8,
+        qtr==4&variable=="month2_emplvl"~11,
+        qtr==1&variable=="month3_emplvl"~3,
+        qtr==2&variable=="month3_emplvl"~6,
+        qtr==3&variable=="month3_emplvl"~9,
+        qtr==4&variable=="month3_emplvl"~12,
+      ),
+      date=as.Date(paste0(year,"-",month,"-01"),format="%Y-%m-%d")) %>%
+      select(date,value) %>%
+      mutate(series_id=sid,
+             level=value)
+
+  }
+  else{
   data = fredr(sid) %>%
     mutate(level=value)
+  }
 
-  if(sid%in%c("ACTLISCOUUS","MEDDAYONMARUS")){
+  if(sid%in%c("ACTLISCOUUS","MEDDAYONMARUS","QCEWEMP")){
 
     data = seasthedata::seasthedata(data %>% select(series_id,date,value) %>% group_by(series_id)) %>%
       ungroup() %>%
@@ -461,18 +508,57 @@ q_growth_function = function(sid){
   require(tidyverse)
   require(magrittr)
 
+  qcewGetAreaData <- function(year, qtr, area) {
+    url <- "http://data.bls.gov/cew/data/api/YEAR/QTR/area/AREA.csv"
+    url <- sub("YEAR", year, url, ignore.case=FALSE)
+    url <- sub("QTR", tolower(qtr), url, ignore.case=FALSE)
+    url <- sub("AREA", toupper(area), url, ignore.case=FALSE)
+    read.csv(url, header = TRUE, sep = ",", quote="\"", dec=".", na.strings=" ", skip=0)
+  }
+
+  if(sid=="QCEWWAGE"){
+
+    data = data.frame()
+    for(yr in c(2014:year(Sys.Date()))){
+      for(qtr in c(1:4)){
+        tryCatch({
+          df = qcewGetAreaData(yr, qtr, "US000") %>%
+            filter(own_code==0)
+          data = bind_rows(data,df)}
+          ,error=function(e){print(paste0("ERROR: ",conditionMessage(e)))})
+      }
+    }
+
+    data = data %>%
+      select(year,qtr,avg_wkly_wage) %>%
+      pivot_longer(avg_wkly_wage,names_to="variable",values_to="value") %>%
+      mutate(month=case_when(
+        qtr==1~1,
+        qtr==2~4,
+        qtr==3~7,
+        qtr==4~10
+      ),
+      date=as.Date(paste0(year,"-",month,"-01"),format="%Y-%m-%d")) %>%
+      select(date,value) %>%
+      mutate(series_id=sid,
+             level=value)
+
+  }
+  else{
   data = fredr(sid) %>%
     mutate(level=value)
+  }
 
-  if(sid%in%c("ACTLISCOUUS","MEDDAYONMARUS")){
+  if(sid%in%c("ACTLISCOUUS","MEDDAYONMARUS","QCEWWAGE")){
 
     data = seasthedata::seasthedata(data %>% select(series_id,date,value) %>% group_by(series_id)) %>%
       ungroup() %>%
-      left_join(data %>% select(date,level),by="date")
+      left_join(data %>% select(date,level),by="date") %>%
+      mutate(level=value)
 
   }
 
-  if(sid%in%c("ECIALLCIV")){
+  if(sid%in%c("ECIALLCIV","QCEWWAGE")){
 
     cpi = fredr("CPIAUCSL") %>%
       select(date,value) %>%
@@ -489,7 +575,7 @@ q_growth_function = function(sid){
     real_data = data %>%
       left_join(cpi,by="date") %>%
       fill(cpi) %>%
-      mutate(level=level/(cpi)*100)
+      mutate(level=level/(cpi/mean(cpi[year(date)==year(max(date))])*100)*100)
 
     real_data = real_data %>%
       rowwise() %>%
@@ -505,6 +591,7 @@ q_growth_function = function(sid){
              series_id=paste0(sid,"R"),
              corr_units_short="%",
              units_short=case_when(
+               sid=="QCEWWAGE"~paste0(year(max(date)),"$"),
                !is.na(units_short)~units_short
              ),
              corr_value=(value/dplyr::lag(value,4)-1)*100,sid1=series_id) %T>%
@@ -540,6 +627,7 @@ q_growth_function = function(sid){
            frequency="Quarterly",
            corr_units_short="%",
            units_short=case_when(
+             sid=="QCEWWAGE"~paste0(year(max(date)),"$"),
              !is.na(units_short)~units_short
            ),
            corr_value=(value/dplyr::lag(value,4)-1)*100,sid1=series_id) %T>%
@@ -566,7 +654,7 @@ q_growth_function = function(sid){
               growth_min=paste0(round(min((value/dplyr::lag(value,4)-1)*100,na.rm=TRUE),digits=2),corr_units_short[1]," on ",date[which.min((value/dplyr::lag(value,4)-1)*100)])) %>%
     ungroup()
 
-  if(sid%in%c("ECIALLCIV")){
+  if(sid%in%c("ECIALLCIV","QCEWWAGE")){
     data=bind_rows(data,real_data)
   }
 
@@ -824,6 +912,33 @@ gdp_plotly = ggplotly(ggplot(gdp_plot %>% select(date,value,title) %>% filter(da
   scale_fill_discrete(name="") +
   labs(y="Contribution to real GDP growth (%)"))
 
+labor_flows_plot = lapply(c("LNS17100000","LNS17400000","LNS17200000","LNS17900000","LNS17800000",
+                            "LNS17000000","LNS17600000","LNS17500000","LNS18000000","CE16OV","UNEMPLOY","LNS15000000"),fredr) %>%
+  bind_rows() %>%
+  filter(date==max(date)) %>%
+  mutate(title=case_when(
+    series_id=="LNS17100000"~"Unemployed to Employed",
+    series_id=="LNS17400000"~"Employed to Unemployed",
+    series_id=="LNS17200000"~"Not in Labor Force to Employed",
+    series_id=="LNS17900000"~"Unemployed to Not in Labor Force",
+    series_id=="LNS17800000"~"Employed to Not in Labor Force",
+    series_id=="LNS17000000"~"Employed to Employed",
+    series_id=="LNS17600000"~"Not in Labor Force to Unemployed",
+    series_id=="LNS17500000"~"Unemployed to Unemployed",
+    series_id=="LNS18000000"~"Not in Labor Force to Not in Labor Force")) %>%
+    separate(title,c("source","destination")," to ") %>%
+  mutate(last_date=as.Date("2022-04-01",format="%Y-%m-%d"),
+         source_scale=ifelse(source=="Employed",paste0(round(value/value[series_id=="CE16OV"],digits=2),"%"),ifelse(source=="Unemployed",paste0(round(value/value[series_id=="UNEMPLOY"],digits=2),"%"),paste0(round(value/value[series_id=="LNS15000000"],digits=2),"%"))))
+
+
+labor_flows_plotly = ggplot(labor_flows_plot %>% filter(source!=destination), aes(axis1=source,axis2=destination,y=value)) +
+  geom_alluvium(aes(fill = destination)) +
+  geom_stratum() +
+  geom_text(stat = "stratum",
+            aes(label = after_stat(stratum))) +
+  scale_x_discrete(limits = c("Source", "Destination"),
+                   expand = c(0.15, 0.05)) +
+  theme_void()
 
 # make function to generate summary table for a given release
 release_table = function(sid){
@@ -925,4 +1040,4 @@ vis_table = function(data,save_table_a,table_a){
 dfs <<- list()
 data_release_table = release_table(series_codes$series_id[series_codes$growth=="m_growth"|series_codes$growth=="m_change"|series_codes$growth=="w_growth"|series_codes$growth=="w_change"|series_codes$growth=="q_growth"|series_codes$growth=="q_change"|series_codes$growth=="d_growth"|series_codes$growth=="d_change"])
 
-save(data_release_table,dfs,save_table_a,vis_table,release_dates,series_codes,gdp_plot,gdp_plotly,file=paste0(master_dir,"Data/release_save/release_data.RData"))
+save(data_release_table,dfs,save_table_a,vis_table,release_dates,series_codes,gdp_plot,gdp_plotly,labor_flows_plotly,file=paste0(master_dir,"Data/release_save/release_data.RData"))
