@@ -1,7 +1,7 @@
 # EconDataReleases.R
 # John Kearns and Grant Seiter
 # 2022-05-05
-# Last updated: 2022-06-09 \\ jdk
+# Last updated: 2022-06-17 \\ jdk
 
 # set folders
 master_dir = paste0("")
@@ -152,8 +152,8 @@ m_growth_function = function(sid){
 
   }
   else{
-  data = fredr(sid) %>%
-    mutate(level=value)
+    data = fredr(sid) %>%
+      mutate(level=value)
   }
 
   if(sid%in%c("ACTLISCOUUS","MEDDAYONMARUS","QCEWEMP")){
@@ -176,8 +176,8 @@ m_growth_function = function(sid){
       mutate(level=level/(cpi/mean(cpi[year(date)==year(last(date))],na.rm=TRUE)*100)*100)
 
     real_data = real_data %>%
-      left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short),by=c("series_id"="id")) %>%
-      mutate(last_updated=max(release_dates$date[release_dates$release_id==series_codes$release_id[series_codes$series_id==sid]&release_dates$date<=Sys.Date()]),
+      left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short,last_updated),by=c("series_id"="id")) %>%
+      mutate(last_updated=as.Date(max(last_updated)),
              title=ifelse(is.na(title),series_codes$series_name[series_codes$series_id==sid],title),
              title=paste0("Real ",title),
              series_id=paste0(sid,"R"),
@@ -218,7 +218,10 @@ m_growth_function = function(sid){
 
   data = data %>%
     left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short),by=c("series_id"="id")) %>%
-    mutate(last_updated=max(release_dates$date[release_dates$release_id==series_codes$release_id[series_codes$series_id==sid]&release_dates$date<=Sys.Date()]),
+    mutate(last_updated=case_when(
+      is.na(title)~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+      TRUE~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% filter(id==sid) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+    ),
            title=ifelse(is.na(title),series_codes$series_name[series_codes$series_id==sid],title),
            frequency="Monthly",
            corr_units_short="%",
@@ -278,8 +281,11 @@ m_change_function = function(sid){
   }
 
   data = data %>%
-    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short),by=c("series_id"="id")) %>%
-    mutate(last_updated=max(release_dates$date[release_dates$release_id==series_codes$release_id[series_codes$series_id==sid]&release_dates$date<=Sys.Date()]),
+    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short,last_updated,last_updated),by=c("series_id"="id")) %>%
+    mutate(last_updated=case_when(
+      is.na(title)~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+      TRUE~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% filter(id==sid) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+    ),
            title=ifelse(is.na(title),series_codes$series_name[series_codes$series_id==sid],title),
            frequency="Monthly",
            corr_units_short=case_when(
@@ -342,8 +348,11 @@ w_growth_function = function(sid){
   }
 
   data = data %>%
-    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short),by=c("series_id"="id")) %>%
-    mutate(last_updated=max(release_dates$date[release_dates$release_id==series_codes$release_id[series_codes$series_id==sid]&release_dates$date<=Sys.Date()]),
+    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short,last_updated,last_updated),by=c("series_id"="id")) %>%
+    mutate(last_updated=case_when(
+      is.na(title)~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+      TRUE~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% filter(id==sid) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+    ),
            title=ifelse(is.na(title),series_codes$series_name[series_codes$series_id==sid],title),
            frequency="Weekly",
            corr_units_short="%",
@@ -414,8 +423,8 @@ w_change_function = function(sid){
       select(-c(month,year))
 
     real_data = real_data %>%
-      left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short),by=c("series_id"="id")) %>%
-      mutate(last_updated=max(release_dates$date[release_dates$release_id==series_codes$release_id[series_codes$series_id==sid]&release_dates$date<=Sys.Date()]),
+      left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short,last_updated),by=c("series_id"="id")) %>%
+      mutate(last_updated=as.Date(max(last_updated)),
              title=ifelse(is.na(title),series_codes$series_name[series_codes$series_id==sid],title),
              title=paste0("Real ",title),
              series_id=paste0(sid,"R"),
@@ -458,8 +467,11 @@ w_change_function = function(sid){
   }
 
   data = data %>%
-    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short),by=c("series_id"="id")) %>%
-    mutate(last_updated=max(release_dates$date[release_dates$release_id==series_codes$release_id[series_codes$series_id==sid]&release_dates$date<=Sys.Date()]),
+    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short,last_updated),by=c("series_id"="id")) %>%
+    mutate(last_updated=case_when(
+      is.na(title)~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+      TRUE~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% filter(id==sid) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+    ),
            title=ifelse(is.na(title),series_codes$series_name[series_codes$series_id==sid],title),
            frequency="Weekly",
            corr_units_short=case_when(
@@ -545,8 +557,8 @@ q_growth_function = function(sid){
 
   }
   else{
-  data = fredr(sid) %>%
-    mutate(level=value)
+    data = fredr(sid) %>%
+      mutate(level=value)
   }
 
   if(sid%in%c("ACTLISCOUUS","MEDDAYONMARUS","QCEWWAGE")){
@@ -583,8 +595,11 @@ q_growth_function = function(sid){
       ungroup()
 
     real_data = real_data %>%
-      left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short),by=c("series_id"="id")) %>%
-      mutate(last_updated=max(release_dates$date[release_dates$release_id==series_codes$release_id[series_codes$series_id==sid]&release_dates$date<=Sys.Date()]),
+      left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short,last_updated),by=c("series_id"="id")) %>%
+      mutate(last_updated=case_when(
+        is.na(title)~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+        TRUE~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% filter(id==sid) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+      ),
              title=ifelse(is.na(title),series_codes$series_name[series_codes$series_id==sid],title),
              frequency="Quarterly",
              title=paste0("Real ",title),
@@ -621,8 +636,11 @@ q_growth_function = function(sid){
   }
 
   data = data %>%
-    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short),by=c("series_id"="id")) %>%
-    mutate(last_updated=max(release_dates$date[release_dates$release_id==series_codes$release_id[series_codes$series_id==sid]&release_dates$date<=Sys.Date()]),
+    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short,last_updated),by=c("series_id"="id")) %>%
+    mutate(last_updated=case_when(
+      is.na(title)~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+      TRUE~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% filter(id==sid) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+    ),
            title=ifelse(is.na(title),series_codes$series_name[series_codes$series_id==sid],title),
            frequency="Quarterly",
            corr_units_short="%",
@@ -680,8 +698,11 @@ q_change_function = function(sid){
   }
 
   data = data %>%
-    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short),by=c("series_id"="id")) %>%
-    mutate(last_updated=max(release_dates$date[release_dates$release_id==series_codes$release_id[series_codes$series_id==sid]&release_dates$date<=Sys.Date()]),
+    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short,last_updated),by=c("series_id"="id")) %>%
+    mutate(last_updated=case_when(
+      is.na(title)~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+      TRUE~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% filter(id==sid) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+    ),
            title=ifelse(is.na(title),series_codes$series_name[series_codes$series_id==sid],title),
            frequency="Quarterly",
            corr_units_short=case_when(
@@ -736,8 +757,11 @@ d_change_function = function(sid){
   }
 
   data = data %>%
-    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short),by=c("series_id"="id")) %>%
-    mutate(last_updated=max(release_dates$date[release_dates$release_id==series_codes$release_id[series_codes$series_id==sid]&release_dates$date<=Sys.Date()]),
+    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short,last_updated),by=c("series_id"="id")) %>%
+    mutate(last_updated=case_when(
+      is.na(title)~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+      TRUE~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% filter(id==sid) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+    ),
            title=ifelse(is.na(title),series_codes$series_name[series_codes$series_id==sid],title),
            frequency="Daily",
            corr_units_short=case_when(
@@ -795,8 +819,11 @@ d_growth_function = function(sid){
   }
 
   data = data %>%
-    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short),by=c("series_id"="id")) %>%
-    mutate(last_updated=max(release_dates$date[release_dates$release_id==series_codes$release_id[series_codes$series_id==sid]&release_dates$date<=Sys.Date()]),
+    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short,last_updated),by=c("series_id"="id")) %>%
+    mutate(last_updated=case_when(
+      is.na(title)~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+      TRUE~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% filter(id==sid) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+    ),
            title=ifelse(is.na(title),series_codes$series_name[series_codes$series_id==sid],title),
            frequency="Daily",
            corr_units_short="%",
@@ -842,8 +869,11 @@ fed_function = function(sid){
     mutate(level=value)
 
   data = data %>%
-    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short),by=c("series_id"="id")) %>%
-    mutate(last_updated=max(release_dates$date[release_dates$release_id==series_codes$release_id[series_codes$series_id==sid]&release_dates$date<=Sys.Date()]),
+    left_join(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(id,title,observation_start,observation_end,units_short,seasonal_adjustment_short,last_updated),by=c("series_id"="id")) %>%
+    mutate(last_updated=case_when(
+      is.na(title)~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+      TRUE~(fredr_release_series(series_codes$release_id[series_codes$series_id==sid]) %>% filter(id==sid) %>% select(last_updated) %>% mutate(last_updated=as.Date(last_updated)) %>% group_by(last_updated) %>% summarize(num=n()) %>% ungroup() %>% arrange(-num) %>% slice(1))$last_updated[1],
+    ),
            title=ifelse(is.na(title),series_codes$series_name[series_codes$series_id==sid],title),
            frequency=NA,
            corr_units_short=NA,
@@ -878,6 +908,7 @@ fed_function = function(sid){
   return(data)
 
 }
+
 
 # make function to plot data
 plot_data = function(data,variable,start_date=-Inf,end_date=Inf){
