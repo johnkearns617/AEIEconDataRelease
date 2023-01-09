@@ -57,7 +57,7 @@ pull_release_dates_json = function(key,date_start,date_end=Sys.Date() %m+% years
 
 }
 
-release_dates = pull_release_dates_json(fred_key,"2023-01-01") %>%
+release_dates = pull_release_dates_json(fred_key,"2022-01-01") %>%
   filter(release_id%in%selected_data$release_id) %>%
   bind_rows(data.frame(release_id=101,release_name="FOMC Press Conference",release_last_updated="2023-01-09",
                        date=paste0("2023-",c("02","03","05","06","07","09","11","12"),"-",c("01","22","03","14","26","20","01","13"))))  # add FOMC press releases at beginning of year
