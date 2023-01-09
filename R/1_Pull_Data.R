@@ -17,7 +17,7 @@ require(dataui)
 require(magrittr)
 require(plotly)
 require(ggalluvial)
-require(seasthedata)
+install_github("angusmoore/seasthedata", ref= "stable")
 
 with_tooltip <- function(value, tooltip) {
   tags$abbr(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
@@ -158,7 +158,9 @@ m_growth_function = function(sid){
   }
 
   if(sid%in%c("ACTLISCOUUS","MEDDAYONMARUS","QCEWEMP")){
-
+  
+    install_github("angusmoore/seasthedata", ref= "stable")
+    
     data = seasthedata::seasthedata(data %>% select(series_id,date,value) %>% group_by(series_id)) %>%
       ungroup() %>%
       left_join(data %>% select(date,level),by="date")
