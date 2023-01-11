@@ -2,7 +2,7 @@ name: Hourly Data Update
 
 on:
   schedule:
-    - cron:  "0 * * * *"
+    - cron:  "* * * * *"
 
 jobs: 
   update-data:
