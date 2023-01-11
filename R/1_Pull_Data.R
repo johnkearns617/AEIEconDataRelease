@@ -18,7 +18,7 @@ require(magrittr)
 require(plotly)
 require(ggalluvial)
 require(devtools)
-install_github("angusmoore/seasthedata", ref= "stable")
+devtools::install_github("angusmoore/seasthedata", ref= "stable")
 
 with_tooltip <- function(value, tooltip) {
   tags$abbr(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
