@@ -28,7 +28,8 @@ Imports:
   remotes,
   plotly,
   ggalluvial,
-  devtools
+  devtools,
+  seasonal
 Remotes:
   hadley/testthat,
   angusmoore/seasthedata,
