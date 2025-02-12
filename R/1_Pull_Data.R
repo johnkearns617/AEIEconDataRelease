@@ -18,6 +18,7 @@ require(magrittr)
 require(plotly)
 require(ggalluvial)
 require(devtools)
+require(seasonal)
 devtools::install_github("angusmoore/seasthedata", ref= "stable")
 
 with_tooltip <- function(value, tooltip) {
